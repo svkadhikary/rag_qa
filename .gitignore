@@ -1,0 +1,54 @@
+# --- FAISS & Custom Vector Stores ---
+*.index
+*.pkl
+*.pickle
+faiss_index/
+vector_store/
+
+# --- Local Data & Document Cache ---
+data/raw/
+data/processed/
+*.pdf
+*.txt
+*.csv
+*.log
+
+# --- Secrets & Environment Config ---
+env/
+.env.*
+.env
+secrets.json
+SECRETS.txt
+
+# --- Python System & Caches ---
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+.pytest_cache/
+
+# --- IDEs & OS Files ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+.gradio/
+
+# --- Jupyter Notebook Caches ---
+.ipynb_checkpoints/
+*.ipynb
+
+# --- UI & Gradio Caches ---
+.gradio/
+flagged/
+
+# --- Local ML Models ---
+*.bin
+*.onnx
+*.gguf
+*.pt
+*.pth
+*.safetensors
+models/
+local_minilm/

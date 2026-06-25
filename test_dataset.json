@@ -1,0 +1,28 @@
+{
+    "dataset": [
+        {
+            "question": "Who were the eight authors of \"Attention Is All You Need\"?",
+            "ground_truth": "Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan Gomez, Łukasz Kaiser, and Illia Polosukhin."
+        },
+        {
+            "question": "What was the initial scaling factor for the key vectors (d_k) set to in the paper?",
+            "ground_truth": "64"
+        },
+        {
+            "question": "Which dataset was used to train the English-to-German translation model described in the paper?",
+            "ground_truth": "the 2014 WMT English-German dataset consisting of nearly 4.5 million sentences derived from TED Talks and high-quality news articles."
+        },
+        {
+            "question": "How many NVIDIA P100 GPUs were used to train the base and big Transformer models?",
+            "ground_truth": "8 NVIDIA P100 GPUs"
+        },
+        {
+            "question": "What is the formula for positional encoding for even indices as described in the paper?",
+            "ground_truth": "PE(pos,2i)=sin(pos/10000^{2i/d_model})"
+        },
+        {
+            "question": "Which song by the Beatles inspired the title of the paper?",
+            "ground_truth": "\"All You Need Is Love\""
+        }
+    ]
+}
