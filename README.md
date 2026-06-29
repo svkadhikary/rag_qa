@@ -11,7 +11,7 @@ A Retrieval-Augmented Generation (RAG) application that allows you to chat with 
 - **RAG Pipeline** – Retrieve relevant chunks, rerank with Cohere, generate responses via Groq
 - **Interactive UI** – Gradio-based chat interface with retrieval transparency
 - **Evaluation Metrics** – Displays faithfulness, recall, and reasoning scores from latest evaluations
-- **Logging** - Logs every stages of the workfllow
+- **Logging** - Logs every stages of the workflow
 
 ## Tech Stack
 - **Language**: Python==3.11+

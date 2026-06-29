@@ -9,7 +9,6 @@ vector_store/
 data/raw/
 data/processed/
 *.pdf
-*.txt
 *.csv
 *.log
 
