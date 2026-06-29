@@ -5,21 +5,7 @@ import asyncio
 import requests
 from datetime import datetime
 import pandas as pd
-# from datasets import Dataset
-# from ragas import evaluate, EvaluationDataset
 from ragas.dataset_schema import SingleTurnSample
-# from ragas.llms import llm_factory
-# from ragas.metrics._faithfulness import Faithfulness
-# from ragas.metrics._answer_relevance import AnswerRelevancy
-# from ragas.metrics._context_precision import ContextPrecision
-# from ragas.metrics._context_recall import ContextRecall
-
-# from ragas.metrics.collections import (
-#     Faithfulness,
-#     AnswerRelevancy,
-#     ContextRecall,
-#     ContextPrecision
-#     )
 
 # Import your existing RAG pipeline components directly
 from utils import load_and_split_pdf, text_splitter
@@ -35,17 +21,18 @@ test_doc = ""
 with open("attention.txt", 'r', encoding='utf-8') as f:
     test_doc = f.read()
 
+# Create own testing data (test_dataset.json). Uncomment this to create test_dataset.json
 # extracted_data = GroqChatModel(model_name="openai/gpt-oss-20b", temperature=0).create_test_qa(test_doc)
 # with open(TEST_FILE, 'w', encoding='utf-8') as f:
 #     json.dump(extracted_data, f, indent=4, ensure_ascii=False)
 # print(f"Successfully saved {len(extracted_data['dataset'])} QA pairs to {TEST_FILE}!")
 
-# ── 1. Load your test dataset ──────────────────────────────────────────────────
+# ── Load your test dataset ──────────────────────────────────────────────────
 # Format: list of dicts with keys: question, ground_truth
 with open("test_dataset.json", 'r', encoding='utf-8') as f:
     test_data = json.load(f)
 
-# ── 2. Build the index once (point to a test PDF or pre-built index) ───────────
+# ── Build the index once (point to a test PDF or pre-built index) ───────────
 # PDF_PATH = "your_test_document.pdf"
 
 # chunks = load_and_split_pdf(PDF_PATH, chunk_size=400, overlap=50)
@@ -75,7 +62,7 @@ vectors = transform_sentences(chunks)
 index = VectorStore(vectors.shape[1], chunks[0][:10]).create_index(vectors)
 
 
-# ── 3. Run your RAG pipeline for each question ─────────────────────────────────
+# ── Run your RAG pipeline for each question ─────────────────────────────────
 def run_rag_pipeline(question: str):
     enriched_query = GroqChatModel(temperature=0.5).query_rewrite(question)
 
@@ -89,7 +76,7 @@ def run_rag_pipeline(question: str):
     answer = GroqChatModel().generate_responses(enriched_query, ''.join(relevant_chunks))
     return answer, relevant_chunks
 
-# ── 4. Collect results into RAGAS format ──────────────────────────────────────
+# ── Collect results into dictionary format ──────────────────────────────────────
 
 samples = []
 for item in test_data['dataset']:
@@ -179,7 +166,7 @@ def evaluate_rag_custom(data_samples, judge_model):
     return pd.DataFrame(results)
 
 
-# ── 5. RUN CUSTOM EVALUATION ──────────────────────────────────────────────────
+# ── RUN CUSTOM EVALUATION ──────────────────────────────────────────────────
 # Initialize your existing Groq wrapper to act as the Judge
 judge_llm = GroqChatModel(temperature=0).client
 
@@ -195,43 +182,3 @@ print(f"Average Context Recall: {df_scores['context_recall'].mean():.2f}")
 file_name = f"custom_scores_{datetime.now().strftime('%m%d%Y__%H%M%S')}.csv"
 df_scores.to_csv(f"eval_results/{file_name}", index=False)
 print(f"Saved evaluation results to eval_results/{file_name}")
-
-# evaluation_dataset = EvaluationDataset(samples=samples)
-
-# results = {
-#     "question": [],
-#     "answer": [],
-#     "contexts": [],
-#     "ground_truth": []
-# }
-
-# for item in test_data['dataset']:
-#     question = item["question"]
-#     ground_truth = item["ground_truth"]
-
-#     answer, context_chunks = run_rag_pipeline(question)
-
-#     results["question"].append(question)
-#     results["answer"].append(answer)
-#     results["contexts"].append(context_chunks)   # list of strings per question
-#     results["ground_truth"].append(ground_truth)
-
-# groq_llm = GroqChatModel().client
-# # evaluator_llm = llm_factory(model=groq_llm.model_name, client=groq_llm.client)
-# # ── 5. Run RAGAS evaluation ───────────────────────────────────────────────────
-# # dataset = Dataset.from_dict(results)
-
-# evaluation_metrics = [
-#         Faithfulness(llm=evaluator_llm),           # is the answer grounded in the context?
-#         ContextPrecision(llm=evaluator_llm),      # are retrieved chunks actually useful?
-#         ContextRecall(llm=evaluator_llm)         # did retrieval capture what was needed?
-#     ]
-
-# scores = evaluate(
-#     dataset = evaluation_dataset,
-#     metrics = evaluation_metrics,
-# )
-
-# print(f"Scores:{scores}")
-# file_name = f"ragas_scores_{datetime.now().strftime('%m%d%Y__%H%M%S')}.csv"
-# scores.to_pandas().to_csv(f"eval_results/{file_name}", index=False)
