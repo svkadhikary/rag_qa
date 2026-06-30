@@ -100,3 +100,59 @@ COHERE_API_KEY=your_cohere_key
  - It uses the same workflow as original application.
  - Saves the evaluation results in eval_results/
  - Uncomment the marked code block to create test_dateset from the doccument of your choice
+
+## Workflow Diagram
+
+```mermaid
+graph TB
+    subgraph "1. Document Processing"
+        A[PDF Upload] --> B[utils.load_pdf]
+        C[URL Input] --> D[requests.get]
+        B --> E[text_splitter]
+        D --> E
+        E --> F[Document Chunks]
+    end
+
+    subgraph "2. Embedding & Indexing"
+        F --> G[transformer_local<br/>MiniLM Model]
+        G --> H[Mean Pooling + L2 Norm]
+        H --> I[VectorStore.create_index<br/>FAISS IndexFlatL2]
+    end
+
+    subgraph "3. Query Pipeline"
+        J[User Query] --> K[GroqChatModel<br/>query_rewrite]
+        K --> L[Enriched Query]
+    end
+
+    subgraph "4. Retrieval & Reranking"
+        L --> M[transformer_local<br/>Query Embedding]
+        M --> N[search<br/>FAISS L2]
+        N --> O[Top-K Chunks]
+        O --> P[cohere_rerank<br/>rerank-v4.0-pro]
+        P --> Q[Top-5 Reranked Chunks]
+    end
+
+    subgraph "5. Response Generation"
+        Q --> R[GroqChatModel<br/>generate_response<br/>Llama 3.3 70B]
+        L --> R
+        R --> S[Final Answer]
+    end
+
+    subgraph "6. UI Interface (Gradio)"
+        T[PDF Uploader] --> A
+        U[URL Input] --> C
+        V[Chat Input] --> J
+        W[Chatbot Output] <--> S
+        X[Retrieved Chunks<br/>Accordion] <--> Q
+        Y[Evaluation Metrics<br/>Faithfulness/Recall] 
+    end
+
+    style A fill:#e1f5fe
+    style C fill:#e1f5fe
+    style G fill:#fff3e0
+    style I fill:#f3e5f5
+    style K fill:#e8f5e9
+    style P fill:#fce4ec
+    style R fill:#e8f5e9
+    style T fill:#e1f5fe
+```
